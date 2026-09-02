@@ -1,0 +1,874 @@
+<meta charset="utf-8" />
+<title>موظف استقبال العيادة</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" />
+
+<style>
+  :root {
+    --ink: #12312d;
+    --ink-soft: #3f5a55;
+    --ground: #f1f5f3;
+    --surface: #ffffff;
+    --line: #dfe8e4;
+    --accent: #0f766e;
+    --warm: #c2410c;
+
+    --wa-bg: #efeae2;
+    --wa-panel: #f0f2f5;
+    --wa-header: #008069;
+    --wa-in: #ffffff;
+    --wa-out: #d9fdd3;
+    --wa-in-text: #111b21;
+    --wa-meta: #667781;
+    --wa-tick: #53bdeb;
+
+    --radius: 16px;
+    --shadow: 0 1px 2px rgba(18, 49, 45, .06), 0 12px 40px -12px rgba(18, 49, 45, .18);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e8f0ed;
+      --ink-soft: #9db5af;
+      --ground: #0c1614;
+      --surface: #13201d;
+      --line: #24352f;
+      --accent: #2dd4bf;
+      --warm: #fb923c;
+
+      --wa-bg: #0b141a;
+      --wa-panel: #202c33;
+      --wa-header: #202c33;
+      --wa-in: #202c33;
+      --wa-out: #005c4b;
+      --wa-in-text: #e9edef;
+      --wa-meta: #8696a0;
+      --wa-tick: #53bdeb;
+
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 18px 50px -14px rgba(0,0,0,.6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #e8f0ed;
+    --ink-soft: #9db5af;
+    --ground: #0c1614;
+    --surface: #13201d;
+    --line: #24352f;
+    --accent: #2dd4bf;
+    --warm: #fb923c;
+
+    --wa-bg: #0b141a;
+    --wa-panel: #202c33;
+    --wa-header: #202c33;
+    --wa-in: #202c33;
+    --wa-out: #005c4b;
+    --wa-in-text: #e9edef;
+    --wa-meta: #8696a0;
+    --wa-tick: #53bdeb;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 18px 50px -14px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    direction: rtl;
+    font-family: "IBM Plex Sans Arabic", system-ui, "Segoe UI", sans-serif;
+    background: var(--ground);
+    color: var(--ink);
+    line-height: 1.75;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: clamp(28px, 5vw, 72px) clamp(18px, 5vw, 40px) 80px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .82rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    padding: 6px 14px;
+    border-radius: 999px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2.4s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
+    70% { box-shadow: 0 0 0 10px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+
+  h1 {
+    font-family: "Cairo", sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.9rem, 5.4vw, 3.1rem);
+    line-height: 1.2;
+    letter-spacing: -.01em;
+    margin: 20px 0 14px;
+    text-wrap: balance;
+  }
+  h1 .hl { color: var(--accent); }
+
+  .lede {
+    font-size: clamp(1.02rem, 2.4vw, 1.2rem);
+    color: var(--ink-soft);
+    max-width: 46ch;
+  }
+
+  .stats {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    margin-top: 26px;
+  }
+  .stats li { display: flex; align-items: center; gap: 8px; font-size: .92rem; font-weight: 500; }
+  .stats li svg { flex: none; width: 18px; height: 18px; color: var(--accent); }
+
+  .stage {
+    margin-top: clamp(40px, 7vw, 64px);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+  @media (min-width: 860px) {
+    .stage { grid-template-columns: 1fr minmax(330px, 370px); align-items: start; }
+  }
+
+  .try h2, .section h2 {
+    font-family: "Cairo", sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 4px;
+  }
+  .try p.hint { font-size: .9rem; color: var(--ink-soft); margin-bottom: 16px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 9px; }
+  .chip {
+    font-family: inherit;
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 9px 15px;
+    cursor: pointer;
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .chip:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .try .foot {
+    margin-top: 18px;
+    font-size: .86rem;
+    color: var(--ink-soft);
+  }
+  .reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 12px;
+    font-family: inherit;
+    font-size: .86rem;
+    font-weight: 600;
+    color: var(--accent);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 0;
+  }
+  .reset:hover { text-decoration: underline; }
+  .reset:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  .phone {
+    justify-self: center;
+    width: 100%;
+    max-width: 370px;
+    background: #0c0c0c;
+    border-radius: 38px;
+    padding: 10px;
+    box-shadow: var(--shadow);
+  }
+  .screen {
+    background: var(--wa-bg);
+    border-radius: 30px;
+    overflow: hidden;
+    height: 640px;
+    display: flex;
+    flex-direction: column;
+  }
+  .wa-head {
+    background: var(--wa-header);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 13px 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .wa-head { color: #e9edef; }
+  }
+  :root[data-theme="dark"] .wa-head { color: #e9edef; }
+  .wa-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.22);
+    display: grid;
+    place-items: center;
+    font-size: 1.1rem;
+    flex: none;
+  }
+  .wa-id { line-height: 1.3; }
+  .wa-id b { font-family: "Cairo", sans-serif; font-weight: 700; font-size: .98rem; }
+  .wa-id span { font-size: .76rem; opacity: .85; }
+
+  .thread {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    scroll-behavior: smooth;
+  }
+  .thread::-webkit-scrollbar { width: 0; }
+
+  .msg {
+    max-width: 82%;
+    padding: 7px 10px 8px;
+    border-radius: 10px;
+    font-size: .9rem;
+    line-height: 1.55;
+    box-shadow: 0 1px .5px rgba(11,20,26,.13);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    animation: pop .18s ease-out;
+  }
+  @keyframes pop { from { opacity: 0; transform: translateY(6px) scale(.98); } }
+
+  .msg.bot { background: var(--wa-in); color: var(--wa-in-text); align-self: flex-start; border-top-right-radius: 3px; }
+  .msg.user { background: var(--wa-out); color: var(--wa-in-text); align-self: flex-end; border-top-left-radius: 3px; }
+  .msg .t { display: block; font-size: .66rem; color: var(--wa-meta); text-align: end; margin-top: 2px; }
+  .msg.user .t::after { content: " ✓✓"; color: var(--wa-tick); }
+
+  .msg.system {
+    align-self: center;
+    background: color-mix(in srgb, var(--warm) 16%, var(--wa-bg));
+    color: var(--wa-in-text);
+    font-size: .78rem;
+    padding: 5px 12px;
+    border-radius: 8px;
+    box-shadow: none;
+    text-align: center;
+  }
+
+  .typing {
+    align-self: flex-start;
+    background: var(--wa-in);
+    padding: 11px 14px;
+    border-radius: 10px;
+    border-top-right-radius: 3px;
+    display: inline-flex;
+    gap: 4px;
+  }
+  .typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--wa-meta); animation: bob 1.1s infinite ease-in-out; }
+  .typing i:nth-child(2) { animation-delay: .18s; }
+  .typing i:nth-child(3) { animation-delay: .36s; }
+  @keyframes bob { 0%, 80%, 100% { transform: translateY(0); opacity: .5; } 40% { transform: translateY(-4px); opacity: 1; } }
+
+  .wa-input {
+    background: var(--wa-panel);
+    padding: 9px 12px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .wa-input input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 11px 16px;
+    font-family: inherit;
+    font-size: .9rem;
+  }
+  .wa-input input::placeholder { color: var(--wa-meta); }
+  .wa-input button {
+    width: 38px; height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: var(--wa-header);
+    display: grid;
+    place-items: center;
+    color: #fff;
+    flex: none;
+    cursor: pointer;
+  }
+  .wa-input button:disabled { opacity: .5; cursor: default; }
+
+  .section { margin-top: clamp(56px, 9vw, 88px); }
+  .section > p.intro { color: var(--ink-soft); max-width: 54ch; margin-top: 6px; }
+
+  .grid {
+    margin-top: 26px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .cell { background: var(--surface); padding: 22px 20px; }
+  .cell .ic {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    color: var(--accent);
+    display: grid;
+    place-items: center;
+    margin-bottom: 12px;
+  }
+  .cell .ic svg { width: 19px; height: 19px; }
+  .cell h3 { font-family: "Cairo", sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+  .cell p { font-size: .9rem; color: var(--ink-soft); }
+
+  .steps { margin-top: 26px; display: grid; gap: 14px; counter-reset: step; }
+  @media (min-width: 720px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+  }
+  .step::before {
+    counter-increment: step;
+    content: counter(step);
+    font-family: "Cairo", sans-serif;
+    font-weight: 900;
+    font-size: 1rem;
+    color: #fff;
+    background: var(--accent);
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 14px;
+  }
+  .step h3 { font-family: "Cairo", sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
+  .step p { font-size: .9rem; color: var(--ink-soft); }
+
+  .close {
+    margin-top: clamp(56px, 9vw, 88px);
+    background: linear-gradient(160deg, #0f3b34, #0a2622);
+    border: 1px solid #17564d;
+    border-radius: 22px;
+    padding: clamp(28px, 6vw, 48px);
+    text-align: center;
+  }
+  .close h2 {
+    font-family: "Cairo", sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    color: #f4fffc;
+    margin-bottom: 10px;
+    text-wrap: balance;
+  }
+  .close p { color: rgba(224,245,240,.82); max-width: 44ch; margin: 0 auto; }
+  .close .tag {
+    display: inline-block;
+    margin-top: 20px;
+    font-family: "Cairo", sans-serif;
+    font-weight: 700;
+    color: #04211d;
+    background: #34d8c5;
+    padding: 11px 22px;
+    border-radius: 999px;
+    font-size: .95rem;
+  }
+
+  footer { margin-top: 40px; text-align: center; font-size: .8rem; color: var(--ink-soft); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001s !important; transition-duration: .001s !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow">مساعد استقبال على واتساب</span>
+    <h1>موظف استقبال يرد على مرضى عيادتك <span class="hl">على مدار الساعة</span></h1>
+    <p class="lede">يحجز المواعيد، يذكّر المرضى، ويجاوب الأسئلة المتكررة — ويسلّم الحالات الخاصة لموظف بشري.</p>
+
+    <ul class="stats">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> رد فوري 24/7</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg> حجز مباشر في تقويم العيادة</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> تذكير وتأكيد حضور تلقائي</li>
+    </ul>
+  </header>
+
+  <section class="stage" aria-label="تجربة المحادثة">
+    <div class="try">
+      <h2>جرّب بنفسك — اكتب رسالة</h2>
+      <p class="hint">اكتب أي شيء في الخانة داخل الجوال، مثل ما يكتب المريض. أمثلة سريعة:</p>
+      <div class="chips" id="chips"></div>
+      <p class="foot">المساعد يفهم: الحجز، التعديل والإلغاء، أوقات الدوام والأسعار، التأمين، تسجيل مريض جديد، قائمة الانتظار، والتحويل لموظف.</p>
+      <button class="reset" id="reset" type="button">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        بدء محادثة جديدة
+      </button>
+    </div>
+
+    <div class="phone">
+      <div class="screen">
+        <div class="wa-head">
+          <div class="wa-avatar">🩺</div>
+          <div class="wa-id">
+            <b>عيادة النخبة الطبية</b><br>
+            <span id="waStatus">متصل الآن</span>
+          </div>
+        </div>
+        <div class="thread" id="thread" aria-live="polite"></div>
+        <form class="wa-input" id="form" autocomplete="off">
+          <input id="input" type="text" placeholder="اكتب رسالة" aria-label="اكتب رسالة للمساعد" />
+          <button type="submit" id="send" aria-label="إرسال">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 20l18-8L3 4v6l12 2-12 2z"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-label="الوظائف">
+    <h2>وش يسوي المساعد</h2>
+    <p class="intro">كل الوظائف تشتغل على رقم واتساب واحد للعيادة، وترتبط مباشرة بتقويم مواعيدها وجدول بيانات واحد.</p>
+    <div class="grid" id="features"></div>
+  </section>
+
+  <section class="section" aria-label="كيف يعمل">
+    <h2>كيف يشتغل — باختصار</h2>
+    <p class="intro">يعمل فوق أدوات جاهزة، بدون أي نظام جديد على العيادة تتعلمه.</p>
+    <div class="steps">
+      <div class="step">
+        <h3>المريض يراسل واتساب العيادة</h3>
+        <p>نفس الرقم المعتاد. يكتب بلغته الطبيعية: «أبغى موعد بكرة الصبح».</p>
+      </div>
+      <div class="step">
+        <h3>المساعد يفهم ويتصرّف</h3>
+        <p>يفتح التقويم، يعطي الأوقات المتاحة، يحجز، ويسجّل بيانات المريض.</p>
+      </div>
+      <div class="step">
+        <h3>العيادة تتابع من مكان واحد</h3>
+        <p>كل موعد يظهر في تقويم العيادة، وكل مريض في جدول واحد — ويوصلكم تقرير يومي.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <h2>جاهز نجرّبه على رقم عيادتك</h2>
+    <p>نربط المساعد على رقم واتساب العيادة وتقويمها خلال يومين عمل، وتجربونه بدون أي التزام.</p>
+    <span class="tag">تجربة أولى مجانية · بدون تغيير نظامكم الحالي</span>
+  </section>
+
+  <footer>عرض تفاعلي — الأسماء والبيانات الظاهرة للتوضيح فقط.</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var thread = document.getElementById("thread");
+  var form = document.getElementById("form");
+  var input = document.getElementById("input");
+  var sendBtn = document.getElementById("send");
+  var waStatus = document.getElementById("waStatus");
+  var chipsBox = document.getElementById("chips");
+  var resetBtn = document.getElementById("reset");
+
+  var CLINIC = "عيادة النخبة الطبية";
+  var HOURS = "من ٩:٠٠ صباحًا إلى ١٠:٠٠ مساءً، طوال أيام الأسبوع.";
+  var ADDRESS = "حي الروضة، شارع الأمير سعود الفيصل، جدة — بجوار صيدلية النهدي.";
+  var INSURANCE = "بوبا (فئة ب فأعلى)، التعاونية، وميدغلف.";
+  var PRICE = "الكشفية العامة ١٥٠ ريال، وكشفية الأخصائي ٢٥٠ ريال.";
+
+  var DOCTORS = {
+    "أسنان": "د. خالد العمري",
+    "تقويم": "د. يمنى صالح",
+    "جلدية": "د. ريم الحربي",
+    "تجميل": "د. ريم الحربي",
+    "أطفال": "د. دعاء عساف",
+    "نساء": "د. هالة منصور",
+    "باطنة": "د. سلمان الغامدي",
+    "عام": "د. سلمان الغامدي"
+  };
+
+  // ---- Arabic normalization ----
+  function norm(s) {
+    return (s || "")
+      .replace(/[ً-ْٰ]/g, "")
+      .replace(/[إأآا]/g, "ا")
+      .replace(/ى/g, "ي")
+      .replace(/ؤ/g, "و")
+      .replace(/ئ/g, "ي")
+      .replace(/ة/g, "ه")
+      .replace(/[ًٌٍَُِّْـ]/g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+  }
+  function has(t, arr) { for (var i = 0; i < arr.length; i++) { if (t.indexOf(arr[i]) !== -1) return true; } return false; }
+
+  // ---- slots ----
+  function nextSlots() {
+    var now = new Date();
+    var defs = [[1, 16, 30], [2, 11, 15], [3, 18, 0]];
+    return defs.map(function (d) {
+      var dt = new Date(now);
+      dt.setDate(dt.getDate() + d[0]);
+      if (dt.getDay() === 5) dt.setDate(dt.getDate() + 1); // تجاوز الجمعة
+      dt.setHours(d[1], d[2], 0, 0);
+      return dt;
+    });
+  }
+  function fmtSlot(dt) {
+    var days = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+    var h = dt.getHours(), m = dt.getMinutes();
+    var ap = h >= 12 ? "م" : "ص";
+    h = h % 12 || 12;
+    var mm = m ? (":" + (m < 10 ? "0" + m : m)) : ":00";
+    var dd = dt.getDate() + "/" + (dt.getMonth() + 1);
+    return days[dt.getDay()] + " " + dd + " — " + h + mm + " " + ap;
+  }
+
+  // ---- conversation state ----
+  var convo;
+  function fresh() { convo = { state: "idle", slots: null, specialty: null, chosen: null, pending: null }; }
+  fresh();
+
+  var SPECIALTIES = ["أسنان", "تقويم", "جلدية", "جلد", "تجميل", "اطفال", "نساء", "ولاده", "باطنه", "باطنية", "عام", "عيون", "انف", "عظام"];
+  function detectSpecialty(t) {
+    if (has(t, ["اسنان", "سن ", "ضرس", "تسوس", "حشو", "خلع"])) return "أسنان";
+    if (has(t, ["تقويم"])) return "تقويم";
+    if (has(t, ["جلد", "بشره", "حبوب", "اكزيما", "صدفيه"])) return "جلدية";
+    if (has(t, ["تجميل", "فيلر", "بوتكس", "ليزر", "هيدرافيشل"])) return "تجميل";
+    if (has(t, ["اطفال", "طفل", "رضيع"])) return "أطفال";
+    if (has(t, ["نسا", "ولاده", "حمل", "نسائيه"])) return "نساء";
+    if (has(t, ["باطن", "معده", "قولون"])) return "باطنة";
+    if (has(t, ["عام", "كشف عام", "حراره", "زكام"])) return "عام";
+    return null;
+  }
+  function doctorFor(sp) { return DOCTORS[sp] || "الطبيب المناوب"; }
+
+  // ---- rendering ----
+  function addMsg(kind, text) {
+    var el = document.createElement("div");
+    el.className = "msg " + kind;
+    if (kind === "system") {
+      el.textContent = text;
+    } else {
+      el.appendChild(document.createTextNode(text));
+      var t = document.createElement("span");
+      t.className = "t";
+      var now = new Date();
+      var h = now.getHours(), m = now.getMinutes();
+      var ap = h >= 12 ? "م" : "ص"; h = h % 12 || 12;
+      t.textContent = h + ":" + (m < 10 ? "0" + m : m) + " " + ap;
+      el.appendChild(t);
+    }
+    thread.appendChild(el);
+    thread.scrollTop = thread.scrollHeight;
+  }
+  function typingOn() {
+    var el = document.createElement("div");
+    el.className = "typing"; el.id = "typing";
+    el.innerHTML = "<i></i><i></i><i></i>";
+    thread.appendChild(el);
+    thread.scrollTop = thread.scrollHeight;
+    waStatus.textContent = "يكتب…";
+  }
+  function typingOff() {
+    var el = document.getElementById("typing");
+    if (el) el.remove();
+    waStatus.textContent = "متصل الآن";
+  }
+
+  var busy = false;
+  function botSay(lines) {
+    if (typeof lines === "string") lines = [lines];
+    busy = true; sendBtn.disabled = true;
+    var i = 0;
+    function step() {
+      if (i >= lines.length) { busy = false; sendBtn.disabled = false; return; }
+      typingOn();
+      var delay = reduce ? 120 : Math.min(500 + lines[i].length * 12, 1600);
+      setTimeout(function () {
+        typingOff();
+        addMsg("bot", lines[i]);
+        i++;
+        setTimeout(step, reduce ? 60 : 260);
+      }, delay);
+    }
+    step();
+  }
+
+  // ---- the engine ----
+  function reply(raw) {
+    var t = norm(raw);
+    var out = [];
+
+    // أولوية قصوى: تحويل لموظف بشري أو طوارئ — في أي وقت
+    if (has(t, ["اكلم موظف", "اكلم احد", "احد يكلمني", "ابي موظف", "ابغي موظف", "موظفه", "تحويل", "بشري", "شكوي", "فاتوره", "فاتوره", "حساب", "المبلغ", "استرجاع", "زعلان", "مشكله", "اشتكي"])) {
+      fresh();
+      return [
+        "حوّلت محادثتك لموظفة العيادة (نورة)، وبتردّ عليك من نفس هذا الرقم خلال دقائق.",
+        "— تم التحويل إلى موظف بشري —"
+      ];
+    }
+    if (has(t, ["اسعاف", "طوارئ", "نزيف", "الم صدر", "ما اقدر اتنفس", "صعوبه تنفس", "اغماء", "حاله طارئه"])) {
+      convo.state = "idle";
+      return ["إذا كانت حالة طارئة الرجاء الاتصال بالإسعاف ٩٩٧ فورًا 🚑\nحوّلت رسالتك لموظفة العيادة للمتابعة."];
+    }
+
+    // context: choosing a slot
+    if (convo.state === "booking_slot") {
+      var pick = null;
+      if (/(^|\s)(1|١|الاول|الأول|اول)($|\s|\.)/.test(t)) pick = 0;
+      else if (/(^|\s)(2|٢|الثاني|ثاني)($|\s|\.)/.test(t)) pick = 1;
+      else if (/(^|\s)(3|٣|الثالث|ثالث)($|\s|\.)/.test(t)) pick = 2;
+      else {
+        for (var s = 0; s < convo.slots.length; s++) {
+          var dn = norm(fmtSlot(convo.slots[s]).split(" — ")[0]);
+          if (dn && t.indexOf(dn.split(" ")[0]) !== -1) { pick = s; break; }
+        }
+      }
+      if (has(t, ["مافي", "ما في", "ماكو", "ابعد", "اقرب", "غير", "ما يناسب", "مايناسب", "بدري", "متاخر"])) {
+        convo.state = "waitlist_offer";
+        return ["ولا يهمك. إذا حاب أضيفك لقائمة الانتظار وأبلغك فور ما ينفتح موعد أقرب — ترد بـ«نعم»؟"];
+      }
+      if (pick === null) return ["تقدر تختار رقم الخيار: ١ أو ٢ أو ٣ 🙂"];
+      convo.chosen = convo.slots[pick];
+      convo.state = "booking_name";
+      return ["تمام ✅ اخترت: " + fmtSlot(convo.chosen) + "\nمع " + doctorFor(convo.specialty) + " (" + convo.specialty + ")\n\nممكن اسمك الثلاثي لإتمام الحجز؟"];
+    }
+
+    // context: waiting for name
+    if (convo.state === "booking_name") {
+      var name = raw.trim().replace(/\s+/g, " ");
+      if (name.split(" ").length < 2 || name.length < 5) return ["ممكن الاسم الثلاثي كامل؟ (مثال: منصور علي القحطاني)"];
+      convo.state = "idle";
+      var d = doctorFor(convo.specialty);
+      var when = fmtSlot(convo.chosen);
+      convo.specialty = null; convo.chosen = null; convo.slots = null;
+      return [
+        "شكرًا يا " + name.split(" ")[0] + " 🙏",
+        "تم تأكيد موعدك:\n📅 " + when + "\n👨‍⚕️ " + d + "\n\nمسجّل في تقويم العيادة، وبنرسل لك تذكيرًا قبل الموعد بيوم. إذا احتجت تعديل أو إلغاء راسلني في أي وقت."
+      ];
+    }
+
+    // context: new patient data
+    if (convo.state === "new_patient") {
+      convo.state = "idle";
+      convo.pending = "offer_booking";
+      return ["تم إنشاء ملفك ✅ ومسجّل باسمك في نظام العيادة.\nتحب أحجز لك موعد الحين؟ (اكتب: نعم)"];
+    }
+
+    // context: waitlist confirm
+    if (convo.state === "waitlist_offer") {
+      convo.state = "idle";
+      if (has(t, ["نعم", "ايه", "اي", "تمام", "اوك", "اوكي", "زين", "اضفني", "ابي", "موافق", "يلا"])) {
+        return ["أضفتك لقائمة الانتظار ✅ مكانك رقم ٢.\nأول ما ينفتح موعد أقرب بننبهك على واتساب فورًا."];
+      }
+      return ["تمام، خليناها على الموعد اللي اخترته. إذا غيّرت رأيك راسلني 🌿"];
+    }
+
+    // context: reschedule pick a day
+    if (convo.state === "reschedule_day") {
+      convo.state = "idle";
+      return ["تمام ✅ حوّلت موعدك إلى " + raw.trim() + " نفس الساعة (١١:١٥ ص) مع د. خالد العمري.\nألغيت الموعد القديم وحدّثت التقويم، ووصلتك رسالة تأكيد."];
+    }
+
+    // pending yes/no (after new patient or fallback) — قبول واضح فقط
+    if (convo.pending === "offer_booking") {
+      if (/^\s*(نعم|ايه|ايوه|اي|تمام|اوك|اوكي|اوكيه|زين|طيب|موافق|يلا|اكيد|ok|yes)\s*$/i.test(t) || has(t, ["نعم احجز", "ايه احجز", "احجز لي", "اها احجز"])) {
+        convo.pending = null;
+        convo.state = "booking_specialty";
+        return ["زين 🌿 أي تخصص تبي الموعد فيه؟ (أسنان، جلدية، عام، أطفال، نساء…)"];
+      }
+      if (/^\s*(لا|لا شكرا|مو الحين|بعدين|خلاص|مب الحين|no)\s*$/i.test(t)) {
+        convo.pending = null;
+        return ["تمام، أنا موجود في أي وقت تحتاج فيه 🌿"];
+      }
+    }
+
+    // context: asked which specialty
+    if (convo.state === "booking_specialty") {
+      var sp = detectSpecialty(t) || (t.length <= 12 ? raw.trim() : null);
+      if (!sp) return ["أي تخصص بالضبط؟ اكتب مثلاً: أسنان، جلدية، أطفال…"];
+      convo.specialty = sp;
+      convo.slots = nextSlots();
+      convo.state = "booking_slot";
+      return ["أقرب المواعيد المتاحة لـ" + sp + ":\n\n1) " + fmtSlot(convo.slots[0]) + "\n2) " + fmtSlot(convo.slots[1]) + "\n3) " + fmtSlot(convo.slots[2]) + "\n\nاكتب رقم الموعد اللي يناسبك."];
+    }
+
+    // ---------- global intents ----------
+    if (has(t, ["اول مره", "مريض جديد", "تسجيل", "ما عندي ملف", "جديد", "افتح ملف"])) {
+      convo.state = "new_patient";
+      return ["أهلًا وسهلًا 🌿 نجهّز ملفك قبل الزيارة عشان نوفّر وقتك.\nأرسل لي في رسالة واحدة:\n1) الاسم الرباعي\n2) رقم الهوية / الإقامة\n3) سنة الميلاد\n4) جهة التأمين (إن وجد)"];
+    }
+
+    if (has(t, ["قائمه انتظار", "قائمة انتظار", "انتظار", "لو صار الغاء", "نتظار", "waitlist"])) {
+      convo.state = "waitlist_offer";
+      return ["أكيد. أي تخصص، ووش الفترة اللي تفضّلها؟ بسجّلك في قائمة الانتظار وأبلغك فور ما ينفتح موعد. (ترد بـ«نعم» للتأكيد)"];
+    }
+
+    if (has(t, ["اجل", "تاجيل", "اغير الموعد", "تغيير موعد", "تعديل موعد", "اعدل موعد", "اعدل موعدي", "بدي اغير موعد", "انقل الموعد"])) {
+      convo.state = "reschedule_day";
+      return ["أكيد. موعدك الحالي: الاثنين ١١:١٥ ص مع د. خالد العمري.\nلأي يوم تبي أحوّله؟"];
+    }
+
+    if (has(t, ["الغاء", "الغي", "ابي الغي", "كنسل", "احذف الموعد", "ما بجي"])) {
+      convo.state = "idle";
+      return ["تم إلغاء موعدك ✅ وفتحنا الوقت لغيرك.\nإذا حاب تحجز موعد ثاني أنا جاهز."];
+    }
+
+    if (has(t, ["موعد", "احجز", "حجز", "ابي احجز", "ابغي موعد", "اريد موعد", "عندكم موعد", "متى فيه موعد", "متاح", "ممكن موعد"])) {
+      var sp2 = detectSpecialty(t);
+      if (sp2) {
+        convo.specialty = sp2;
+        convo.slots = nextSlots();
+        convo.state = "booking_slot";
+        return ["أقرب المواعيد المتاحة لـ" + sp2 + ":\n\n1) " + fmtSlot(convo.slots[0]) + "\n2) " + fmtSlot(convo.slots[1]) + "\n3) " + fmtSlot(convo.slots[2]) + "\n\nاكتب رقم الموعد اللي يناسبك."];
+      }
+      convo.state = "booking_specialty";
+      return ["أكيد 🌿 أي تخصص تبي الموعد فيه؟ (أسنان، جلدية، عام، أطفال، نساء…)"];
+    }
+
+    if (has(t, ["دوام", "توقيت", "متى تفتحون", "متى تسكرون", "ساعات العمل", "اوقات", "مفتوحين", "تفتحون"])) {
+      return ["أوقات الدوام: " + HOURS + "\nتحب أحجز لك موعد؟"];
+    }
+
+    if (has(t, ["كم السعر", "بكم", "الكشفيه", "سعر الكشف", "التكلفه", "كم تكلفه", "الاسعار", "كم الكشف"])) {
+      return [PRICE + "\nالمبلغ يختلف حسب الحالة والإجراء، والموظفة تعطيك التفاصيل عند الزيارة."];
+    }
+
+    if (has(t, ["تامين", "بوبا", "التعاونيه", "ميدغلف", "شركه تامين", "تقبلون تامين"])) {
+      return ["نقبل: " + INSURANCE + "\nإذا تأمينك مو منها، تقدر تكشف كاش. تحب أحجز لك؟"];
+    }
+
+    if (has(t, ["الموقع", "موقعكم", "وين موقع", "العنوان", "عنوانكم", "وينكم", "وين انتم", "وين مكانكم", "المكان", "الفرع", "خرايط", "خريطه", "لوكيشن"])) {
+      return ["موقعنا: " + ADDRESS + "\nنرسل لك رابط الخريطة مع رسالة تأكيد الموعد."];
+    }
+
+    if (has(t, ["شكرا", "مشكور", "يعطيك العافيه", "تسلم", "جزاك"])) {
+      return ["العفو 🌿 حياك الله في أي وقت."];
+    }
+
+    if (has(t, ["سلام", "هلا", "هاي", "مرحبا", "صباح الخير", "مساء الخير", "السلام", "هلو"])) {
+      return ["وعليكم السلام 🌿 حيّاك الله في " + CLINIC + ".\nأنا مساعد الاستقبال — أقدر أحجز لك موعد، أعدّله أو ألغيه، وأجاوب استفساراتك. كيف أساعدك؟"];
+    }
+
+    // fallback
+    convo.pending = "offer_booking";
+    return ["أقدر أساعدك في:\n• حجز موعد\n• تعديل أو إلغاء موعد\n• أوقات الدوام والأسعار والتأمين\n• تسجيل مريض جديد\n• قائمة الانتظار\n\nتحب أحجز لك موعد؟ (اكتب: نعم)"];
+  }
+
+  function userSend(text) {
+    if (busy || !text.trim()) return;
+    addMsg("user", text.trim());
+    var lines = reply(text);
+    botSay(lines);
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = input.value;
+    input.value = "";
+    userSend(v);
+  });
+
+  // quick chips
+  var QUICK = [
+    "أبغى موعد أسنان",
+    "كم الكشفية وتقبلون تأمين بوبا؟",
+    "متى دوامكم؟",
+    "أول مرة أراجع عندكم",
+    "أبغى أعدّل موعدي",
+    "ما فيه موعد قريب، سجّلوني بالانتظار",
+    "أبغى أكلم موظف"
+  ];
+  QUICK.forEach(function (q) {
+    var b = document.createElement("button");
+    b.className = "chip";
+    b.type = "button";
+    b.textContent = q;
+    b.addEventListener("click", function () {
+      if (busy) return;
+      input.value = "";
+      userSend(q);
+    });
+    chipsBox.appendChild(b);
+  });
+
+  function greet() {
+    thread.innerHTML = "";
+    fresh();
+    botSay(["السلام عليكم 🌿 حيّاك الله في " + CLINIC + ".\nأنا مساعد الاستقبال. تقدر تكتب لي طلبك عادي، مثل: «أبغى موعد أسنان بكرة»."]);
+  }
+  resetBtn.addEventListener("click", greet);
+
+  // features grid
+  var FEATURES = [
+    ["حجز وإلغاء وتعديل", "المريض يحجز أو يعدّل موعده بالكلام العادي، والتقويم يتحدّث لحظيًا.",
+      '<path d="M3 4h18v17H3zM3 9h18M8 2v4M16 2v4M9 14l2 2 4-4"/>'],
+    ["تذكير قبل الموعد", "رسالة تذكير تلقائية قبل الموعد بيوم، تقلّل نسبة عدم الحضور.",
+      '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>'],
+    ["الأسئلة المتكررة", "الدوام، الأسعار، العنوان، التأمين المقبول — إجابات فورية دقيقة.",
+      '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.9.4-1 .8-1 1.7M12 17h.01"/>'],
+    ["تسجيل مريض جديد", "يجمع بيانات الزيارة الأولى ويسجّلها قبل الحضور.",
+      '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6"/>'],
+    ["قائمة انتظار ذكية", "لو انحجزت المواعيد، يسجّل المريض وينبّهه فور حصول إلغاء.",
+      '<path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/>'],
+    ["تأكيد الحضور", "لو ما أكّد المريض، يُلغى الموعد تلقائيًا ويُعرض لقائمة الانتظار.",
+      '<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>'],
+    ["تحويل لموظف بشري", "أي طلب خارج نطاق الحجز يُحوّل لموظف العيادة مع سجل المحادثة.",
+      '<path d="M4 4h16v12H5.2L4 17.2zM8 9h8M8 12h5"/>'],
+    ["تقرير يومي للعيادة", "ملخّص حجوزات اليوم، الإلغاءات، وقائمة الغد يصل للإدارة صباحًا.",
+      '<path d="M4 4h16v16H4zM8 16v-4M12 16V8M16 16v-6"/>']
+  ];
+  FEATURES.forEach(function (f) {
+    var cell = document.createElement("div");
+    cell.className = "cell";
+    cell.innerHTML =
+      '<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + f[2] + '</svg></div><h3></h3><p></p>';
+    cell.querySelector("h3").textContent = f[0];
+    cell.querySelector("p").textContent = f[1];
+    document.getElementById("features").appendChild(cell);
+  });
+
+  greet();
+})();
+
+</script>
