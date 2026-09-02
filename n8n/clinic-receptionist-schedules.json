@@ -1,0 +1,117 @@
+{
+  "name": "Clinic Receptionist — Schedules (Reminders + Daily Report)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 18 * * *" }] }
+      },
+      "id": "cron-reminder",
+      "name": "Every day 18:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": { "__rl": true, "value": "REPLACE_CALENDAR_ID", "mode": "id" },
+        "returnAll": true,
+        "options": {
+          "timeMin": "={{ $today.plus({ days: 1 }).toISO() }}",
+          "timeMax": "={{ $today.plus({ days: 2 }).toISO() }}"
+        }
+      },
+      "id": "cal-tomorrow",
+      "name": "Get Tomorrow's Appointments",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [220, 0],
+      "credentials": {
+        "googleCalendarOAuth2Api": { "id": "REPLACE", "name": "Google Calendar" }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "REPLACE_PHONE_NUMBER_ID",
+        "recipientPhoneNumber": "={{ $json.description.match(/\\+?\\d{9,}/)[0] }}",
+        "messageType": "template",
+        "template": "appointment_reminder",
+        "additionalFields": {}
+      },
+      "id": "send-reminder",
+      "name": "Send Reminder Template",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [440, 0],
+      "credentials": {
+        "whatsAppApi": { "id": "REPLACE", "name": "WhatsApp API" }
+      }
+    },
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 7 * * *" }] }
+      },
+      "id": "cron-report",
+      "name": "Every day 07:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 260]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": { "__rl": true, "value": "REPLACE_CALENDAR_ID", "mode": "id" },
+        "returnAll": true,
+        "options": {
+          "timeMin": "={{ $today.toISO() }}",
+          "timeMax": "={{ $today.plus({ days: 1 }).toISO() }}"
+        }
+      },
+      "id": "cal-today",
+      "name": "Get Today's Appointments",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [220, 260],
+      "credentials": {
+        "googleCalendarOAuth2Api": { "id": "REPLACE", "name": "Google Calendar" }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all().map(i => i.json);\nconst lines = items\n  .sort((a,b) => new Date(a.start) - new Date(b.start))\n  .map(e => `• ${new Date(e.start).toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'})} — ${e.summary}`);\nconst body = `تقرير اليوم — ${$today.toFormat('yyyy-LL-dd')}\\nعدد المواعيد: ${items.length}\\n\\n${lines.join('\\n') || 'لا مواعيد اليوم'}`;\nreturn [{ json: { body } }];"
+      },
+      "id": "build-report",
+      "name": "Build Report Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 260]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "REPLACE_PHONE_NUMBER_ID",
+        "recipientPhoneNumber": "REPLACE_ADMIN_PHONE",
+        "textBody": "={{ $json.body }}",
+        "additionalFields": {}
+      },
+      "id": "send-report",
+      "name": "Send Report to Admin",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [660, 260],
+      "credentials": {
+        "whatsAppApi": { "id": "REPLACE", "name": "WhatsApp API" }
+      }
+    }
+  ],
+  "connections": {
+    "Every day 18:00": { "main": [[{ "node": "Get Tomorrow's Appointments", "type": "main", "index": 0 }]] },
+    "Get Tomorrow's Appointments": { "main": [[{ "node": "Send Reminder Template", "type": "main", "index": 0 }]] },
+    "Every day 07:00": { "main": [[{ "node": "Get Today's Appointments", "type": "main", "index": 0 }]] },
+    "Get Today's Appointments": { "main": [[{ "node": "Build Report Text", "type": "main", "index": 0 }]] },
+    "Build Report Text": { "main": [[{ "node": "Send Report to Admin", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}
