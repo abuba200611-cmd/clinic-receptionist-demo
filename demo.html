@@ -164,6 +164,8 @@
   @media (max-width: 859px) {
     .phone { order: -1; }
   }
+  /* عناصر الـgrid تاخذ min-width:auto افتراضيًا، فتوسّع الحاوية بدل ما تلفّ النص */
+  .try, .phone { min-width: 0; }
 
   .try h2, .section h2 {
     font-family: "Cairo", sans-serif;
