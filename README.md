@@ -9,7 +9,9 @@
 
 ## الرابط المباشر (للعرض على العيادات)
 
-**https://abuba200611-cmd.github.io/clinic-receptionist-demo/**
+**https://clinic-receptionist-demo.vercel.app/** — هذا الرابط الأساسي (Vercel، تحديث فوري بدون مشاكل كاش).
+
+مرآة إضافية: https://abuba200611-cmd.github.io/clinic-receptionist-demo/ (GitHub Pages — قد يتأخر التحديث بسبب الكاش)
 
 نموذج تفاعلي كامل: المريض يكتب رسالته بنفسه ويرد عليه المساعد (حجز، تعديل، إلغاء، استفسارات، تسجيل، قائمة انتظار، تحويل لموظف). يشتغل بدون إنترنت وبدون أي خدمة خارجية.
 
